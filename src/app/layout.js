@@ -94,20 +94,6 @@ export const metadata = {
     },
   },
 
-  // Alternar modo claro/escuro
-  colorScheme: 'light',
-
-  // Tema de cor
-  themeColor: '#a855f7',
-
-  // Viewport
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
-
   // Manifesto PWA
   manifest: '/manifest.json',
 
@@ -125,6 +111,19 @@ export const metadata = {
   alternates: {
     canonical: siteConfig.url,
   },
+};
+
+// ============================================
+// EXPORT VIEWPORT (Next.js 14+)
+// colorScheme, themeColor e viewport agora ficam aqui
+// ============================================
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: '#a855f7',
+  colorScheme: 'light',
 };
 
 /**

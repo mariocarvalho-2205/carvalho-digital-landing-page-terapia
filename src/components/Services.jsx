@@ -17,7 +17,7 @@ import {
   FiHeart,
   FiArrowRight,
 } from 'react-icons/fi';
-import { GiYogi, GiMassage } from 'react-icons/gi';
+import { GiMeditation, GiBodyBalance } from 'react-icons/gi';
 import { siteConfig, formatPrice } from '@/lib/siteConfig';
 import { getWhatsAppWebURL } from '@/lib/apiIntegrations';
 
@@ -59,9 +59,9 @@ const cardVariants = {
 // ============================================
 const iconMap = {
   'FiActivity': FiActivity,
-  'GiYogi': GiYogi,
-  'FaWheelchair': GiMassage, // Usando GiMassage como alternativa
-  'GiMassage': GiMassage,
+  'GiYogi': GiMeditation,
+  'FaWheelchair': GiBodyBalance, // Usando GiBodyBalance como alternativa
+  'GiMassage': GiBodyBalance,
   'FiHome': FiHome,
   'FiBarChart2': FiBarChart2,
 };

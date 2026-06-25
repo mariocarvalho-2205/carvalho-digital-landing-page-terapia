@@ -5,7 +5,6 @@
 // Integra todos os componentes da landing page
 // ============================================
 
-import { DefaultSeo } from 'next-seo';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import Services from '@/components/Services';
