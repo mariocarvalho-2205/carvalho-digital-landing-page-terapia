@@ -1,11 +1,6 @@
 // ============================================
-// COMPONENTE FORM DE CONTATO
+// COMPONENTE FORM DE CONTATO [CORRIGIDO]
 // Arquivo: src/components/FormContact.jsx
-//
-// Formulário com integração:
-// - WhatsApp API (Meta)
-// - N8N (Automação)
-// - Validação de dados
 // ============================================
 
 'use client';
@@ -17,7 +12,6 @@ import {
   FiSend,
   FiAlertCircle,
   FiCheckCircle,
-  FiX,
   FiPhone,
   FiMail,
   FiUser,
@@ -67,7 +61,7 @@ const messageVariants = {
 // ============================================
 export default function FormContact() {
   // ============================================
-  // ESTADOS
+  // HOOK DO FORMULÁRIO
   // ============================================
   const {
     register,
@@ -120,11 +114,14 @@ export default function FormContact() {
       }
 
       // ============================================
-      // OPÇÃO 1: Enviar para N8N (RECOMENDADO)
-      // Permite automações complexas no N8N
+      // ✅ CORRIGIDO: Usar NEXT_PUBLIC_ para cliente
       // ============================================
-      if (process.env.N8N_WEBHOOK_URL) {
+      const n8nWebhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL;
+      const hasN8N = n8nWebhookUrl && n8nWebhookUrl.trim() !== '';
+
+      if (hasN8N) {
         try {
+          // Enviar para N8N com tratamento de erro
           const n8nResponse = await sendToN8N(
             {
               name: data.name,
@@ -136,13 +133,15 @@ export default function FormContact() {
             'contact-form'
           );
 
-          console.log('Formulário enviado para N8N:', n8nResponse);
+          console.log('✅ Formulário enviado para N8N com sucesso:', n8nResponse);
         } catch (n8nError) {
-          console.warn('Erro ao enviar para N8N, tentando WhatsApp direto:', n8nError);
+          // Log do erro mas não para a execução se possível
+          console.warn('⚠️ Erro ao enviar para N8N:', n8nError);
 
-          // Fallback: enviar direto via WhatsApp API
+          // Fallback: enviar direto via WhatsApp API (se disponível)
           if (process.env.WHATSAPP_API_TOKEN) {
-            const whatsappMessage = `
+            try {
+              const whatsappMessage = `
 *Novo Contato - Formulário Landing Page*
 
 *Nome:* ${data.name}
@@ -150,14 +149,27 @@ export default function FormContact() {
 *Telefone:* ${data.phone}
 *Serviço:* ${data.service}
 *Mensagem:* ${data.message}
-            `.trim();
+              `.trim();
 
-            await sendWhatsAppMessage(
-              siteConfig.professional.phone,
-              whatsappMessage
-            );
+              await sendWhatsAppMessage(
+                siteConfig.professional.phone,
+                whatsappMessage
+              );
+              console.log('✅ Fallback: Mensagem enviada via WhatsApp API');
+            } catch (waError) {
+              console.error('❌ Fallback também falhou:', waError);
+              throw new Error(
+                'N8N e WhatsApp API falharam. ' +
+                'Verifique a configuração em .env.local'
+              );
+            }
           }
         }
+      } else {
+        throw new Error(
+          'N8N não está configurado. ' +
+          'Adicione NEXT_PUBLIC_N8N_WEBHOOK_URL ao seu .env.local'
+        );
       }
 
       // ============================================
@@ -171,8 +183,10 @@ export default function FormContact() {
       // Limpar mensagem após 5 segundos
       setTimeout(() => setSuccessMessage(''), 5000);
     } catch (error) {
-      console.error('Erro ao enviar formulário:', error);
-      setErrorMessage(error.message || 'Erro ao enviar mensagem. Tente novamente.');
+      console.error('❌ Erro ao enviar formulário:', error);
+      setErrorMessage(
+        error.message || 'Erro ao enviar mensagem. Tente novamente.'
+      );
 
       // Limpar mensagem após 5 segundos
       setTimeout(() => setErrorMessage(''), 5000);
@@ -269,7 +283,7 @@ export default function FormContact() {
                   </div>
                 </motion.a>
 
-                {/* Endereço */}
+                {/* Horários */}
                 <motion.div
                   whileHover={{ x: 10 }}
                   className="flex items-start gap-4 p-4 rounded-lg hover:bg-primary-50 transition-colors"
