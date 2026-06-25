@@ -1,0 +1,357 @@
+// ============================================
+// EXEMPLO DE WORKFLOW N8N
+// Arquivo: n8n-workflows-examples.json
+// 
+// Para importar no N8N:
+// 1. Ir para Dashboard
+// 2. Settings > Import > Selecionar este arquivo
+// 3. Configurar credenciais
+// 4. Ativar workflow
+// ============================================
+
+{
+  "workflows": [
+    {
+      "name": "Landing Page - Contact Form",
+      "description": "Recebe formulário da landing page e envia via WhatsApp",
+      "nodes": [
+        {
+          "parameters": {},
+          "name": "Webhook",
+          "type": "n8n-nodes-base.webhook",
+          "typeVersion": 1,
+          "position": [250, 300],
+          "webhookId": "seu-webhook-id",
+          "webhookPath": "contact-form",
+          "method": "POST"
+        },
+        {
+          "parameters": {
+            "jsonData": "={{ $json }}"
+          },
+          "name": "Parse JSON",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 1,
+          "position": [450, 300]
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "string": [
+                {
+                  "value1": "={{ $json.phone }}",
+                  "value2": "",
+                  "operation": "notEmpty"
+                },
+                {
+                  "value1": "={{ $json.email }}",
+                  "value2": "",
+                  "operation": "notEmpty"
+                }
+              ]
+            }
+          },
+          "name": "If Valid",
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 1,
+          "position": [650, 300]
+        },
+        {
+          "parameters": {
+            "credentials": "WhatsApp Business API",
+            "phoneNumber": "={{ $json.phone }}",
+            "message": "=Olá {{ $json.name }}, recebemos seu contato!\\n\\nServiço: {{ $json.service }}\\nMensagem: {{ $json.message }}\\n\\nResponderemos em breve!"
+          },
+          "name": "Send WhatsApp",
+          "type": "n8n-nodes-base.whatsappApi",
+          "typeVersion": 1,
+          "position": [850, 200],
+          "credentials": {
+            "whatsappBusinessApi": {
+              "id": "sua-credencial-id",
+              "name": "WhatsApp Business"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "credentials": "Google Sheets",
+            "spreadsheetId": "seu-sheet-id",
+            "sheet": "Contatos",
+            "columns": {
+              "name": "={{ $json.name }}",
+              "email": "={{ $json.email }}",
+              "phone": "={{ $json.phone }}",
+              "service": "={{ $json.service }}",
+              "message": "={{ $json.message }}",
+              "date": "={{ $now.toLocaleString() }}"
+            }
+          },
+          "name": "Save to Sheets",
+          "type": "n8n-nodes-base.googleSheets",
+          "typeVersion": 3,
+          "position": [850, 400],
+          "credentials": {
+            "googleApi": {
+              "id": "sua-credencial-id",
+              "name": "Google"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "credentials": "Gmail",
+            "from": "seu-email@gmail.com",
+            "to": "={{ $json.email }}",
+            "subject": "Confirmação de contato - Terapias Integradas",
+            "htmlBody": "=<h2>Oi {{ $json.name }}!</h2>\\n<p>Obrigado por entrar em contato conosco.</p>\\n<p>Recebemos sua mensagem e responderemos em breve.</p>\\n<p><strong>Serviço:</strong> {{ $json.service }}</p>\\n<p>Att,<br/>Ana Carolina</p>"
+          },
+          "name": "Send Email",
+          "type": "n8n-nodes-base.gmail",
+          "typeVersion": 2,
+          "position": [850, 600],
+          "credentials": {
+            "gmailApi": {
+              "id": "sua-credencial-id",
+              "name": "Gmail"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "responseCode": 200,
+            "responseData": "={{ { success: true, message: 'Dados recebidos com sucesso' } }}"
+          },
+          "name": "Respond to Webhook",
+          "type": "n8n-nodes-base.respondToWebhook",
+          "typeVersion": 1,
+          "position": [1050, 300]
+        }
+      ],
+      "connections": {
+        "Webhook": {
+          "main": [
+            [
+              {
+                "node": "Parse JSON",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Parse JSON": {
+          "main": [
+            [
+              {
+                "node": "If Valid",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "If Valid": {
+          "main": [
+            [
+              {
+                "node": "Send WhatsApp",
+                "type": "main",
+                "index": 0
+              },
+              {
+                "node": "Save to Sheets",
+                "type": "main",
+                "index": 0
+              },
+              {
+                "node": "Send Email",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Respond to Webhook",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Send WhatsApp": {
+          "main": [
+            [
+              {
+                "node": "Respond to Webhook",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Save to Sheets": {
+          "main": [
+            [
+              {
+                "node": "Respond to Webhook",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Send Email": {
+          "main": [
+            [
+              {
+                "node": "Respond to Webhook",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "active": true
+    },
+    {
+      "name": "Landing Page - Follow-up (Daily)",
+      "description": "Verifica contatos sem resposta e envia follow-up",
+      "nodes": [
+        {
+          "parameters": {
+            "rule": {
+              "interval": [
+                {
+                  "triggerAtHour": 9,
+                  "triggerAtMinute": 0
+                }
+              ]
+            }
+          },
+          "name": "Schedule",
+          "type": "n8n-nodes-base.scheduleTrigger",
+          "typeVersion": 1,
+          "position": [250, 300]
+        },
+        {
+          "parameters": {
+            "credentials": "Google Sheets",
+            "spreadsheetId": "seu-sheet-id",
+            "sheet": "Contatos",
+            "filters": {
+              "string": [
+                {
+                  "column": "responded",
+                  "operator": "isEmpty"
+                }
+              ]
+            }
+          },
+          "name": "Get Non-Responded",
+          "type": "n8n-nodes-base.googleSheets",
+          "typeVersion": 3,
+          "position": [450, 300]
+        },
+        {
+          "parameters": {
+            "resource": "row",
+            "operation": "update",
+            "credentials": "Google Sheets",
+            "spreadsheetId": "seu-sheet-id",
+            "sheet": "Contatos",
+            "dataMode": "autoMap",
+            "dataToSend": {
+              "setKeyRow": false,
+              "entries": [
+                {
+                  "column": "follow_up_sent",
+                  "fieldValue": "={{ $now.toLocaleString() }}"
+                }
+              ]
+            }
+          },
+          "name": "Mark Follow-up Sent",
+          "type": "n8n-nodes-base.googleSheets",
+          "typeVersion": 3,
+          "position": [850, 300]
+        },
+        {
+          "parameters": {
+            "credentials": "WhatsApp Business API",
+            "phoneNumber": "={{ $json.phone }}",
+            "message": "=Olá {{ $json.name }}!\\n\\nSó queremos lembrar que recebemos seu contato sobre {{ $json.service }}.\\n\\nTemos disponibilidade para consulta esta semana!\\n\\nResponda este mensagem ou ligue!"
+          },
+          "name": "Send Follow-up",
+          "type": "n8n-nodes-base.whatsappApi",
+          "typeVersion": 1,
+          "position": [650, 300]
+        }
+      ],
+      "connections": {
+        "Schedule": {
+          "main": [
+            [
+              {
+                "node": "Get Non-Responded",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Get Non-Responded": {
+          "main": [
+            [
+              {
+                "node": "Send Follow-up",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Send Follow-up": {
+          "main": [
+            [
+              {
+                "node": "Mark Follow-up Sent",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "active": true
+    }
+  ],
+  "credentials": [
+    {
+      "name": "WhatsApp Business API",
+      "type": "whatsappBusinessApi",
+      "config": {
+        "phoneNumberId": "seu_phone_number_id",
+        "apiToken": "seu_access_token",
+        "businessAccountId": "seu_business_account_id"
+      }
+    },
+    {
+      "name": "Google",
+      "type": "googleApi",
+      "config": {
+        "clientId": "seu_client_id",
+        "clientSecret": "seu_client_secret"
+      }
+    },
+    {
+      "name": "Gmail",
+      "type": "gmailApi",
+      "config": {
+        "email": "seu-email@gmail.com",
+        "credentials": "oauth2"
+      }
+    }
+  ]
+}

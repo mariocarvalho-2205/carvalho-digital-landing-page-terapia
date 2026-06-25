@@ -1,0 +1,361 @@
+/* ============================================ */
+/* ESTILOS GLOBAIS */
+/* Arquivo: src/app/globals.css */
+/* ============================================ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================ */
+/* VARIÁVEIS CSS CUSTOMIZADAS */
+/* ============================================ */
+:root {
+  /* Cores */
+  --color-primary: #a855f7;
+  --color-primary-dark: #7e22ce;
+  --color-rose: #ff6b35;
+  --color-gold: #f59e0b;
+  
+  /* Sombras */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.16);
+  
+  /* Transições */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 300ms ease-in-out;
+  --transition-slow: 500ms ease-in-out;
+}
+
+/* ============================================ */
+/* RESETS E CONFIGURAÇÕES BASE */
+/* ============================================ */
+* {
+  @apply transition-colors duration-300;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  @apply bg-white text-neutral-900;
+  font-family: var(--font-sans), sans-serif;
+  overflow-x: hidden;
+}
+
+/* ============================================ */
+/* TIPOGRAFIA CUSTOMIZADA */
+/* ============================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans), sans-serif;
+  @apply font-bold text-neutral-900;
+  line-height: 1.2;
+}
+
+h1 {
+  @apply text-4xl sm:text-5xl lg:text-6xl;
+}
+
+h2 {
+  @apply text-3xl sm:text-4xl lg:text-5xl;
+}
+
+h3 {
+  @apply text-2xl sm:text-3xl;
+}
+
+p {
+  @apply text-base sm:text-lg;
+  line-height: 1.6;
+}
+
+/* ============================================ */
+/* LINKS E BOTÕES */
+/* ============================================ */
+a {
+  @apply text-primary-600 hover:text-primary-700 font-medium;
+  text-decoration: none;
+  transition: var(--transition-base);
+}
+
+a:focus-visible {
+  @apply outline-2 outline-offset-2 outline-primary-500;
+}
+
+button {
+  @apply transition-all duration-300;
+  
+  &:focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary-500;
+  }
+}
+
+/* ============================================ */
+/* FORMS E INPUTS */
+/* ============================================ */
+input,
+textarea,
+select {
+  @apply w-full px-4 py-3 rounded-lg border border-neutral-300 bg-white;
+  @apply text-neutral-900 placeholder-neutral-400;
+  @apply transition-colors duration-300;
+  font-family: var(--font-sans), sans-serif;
+
+  &:focus {
+    @apply outline-none border-primary-500 ring-2 ring-primary-100;
+  }
+
+  &:disabled {
+    @apply bg-neutral-100 cursor-not-allowed opacity-60;
+  }
+
+  &::placeholder {
+    @apply text-neutral-400;
+  }
+}
+
+textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* ============================================ */
+/* SCROLLBAR CUSTOMIZADO */
+/* ============================================ */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-neutral-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary-500 rounded-full hover:bg-primary-600;
+  border-radius: 5px;
+}
+
+/* Firefox */
+* {
+  scrollbar-color: #a855f7 #f5f5f4;
+  scrollbar-width: thin;
+}
+
+/* ============================================ */
+/* COMPONENTES CUSTOMIZADOS */
+/* ============================================ */
+
+/* Botão Primário */
+.btn-primary {
+  @apply px-8 py-3 rounded-lg font-semibold;
+  @apply bg-primary-600 text-white;
+  @apply hover:bg-primary-700 active:bg-primary-800;
+  @apply transition-colors duration-300;
+  @apply shadow-medium hover:shadow-hard;
+}
+
+/* Botão Secundário */
+.btn-secondary {
+  @apply px-8 py-3 rounded-lg font-semibold;
+  @apply bg-white text-primary-600;
+  @apply border-2 border-primary-600;
+  @apply hover:bg-primary-50 active:bg-primary-100;
+  @apply transition-colors duration-300;
+}
+
+/* Botão Outline */
+.btn-outline {
+  @apply px-8 py-3 rounded-lg font-semibold;
+  @apply bg-transparent text-neutral-700;
+  @apply border-2 border-neutral-300;
+  @apply hover:border-primary-600 hover:text-primary-600;
+  @apply transition-colors duration-300;
+}
+
+/* Cartão */
+.card {
+  @apply rounded-2xl bg-white p-6 sm:p-8;
+  @apply shadow-soft hover:shadow-medium;
+  @apply transition-all duration-300;
+}
+
+.card-hover {
+  @apply hover:-translate-y-2 hover:shadow-hard;
+}
+
+/* Badge */
+.badge {
+  @apply inline-flex items-center gap-2;
+  @apply px-3 py-1 rounded-full text-sm font-medium;
+  @apply bg-primary-100 text-primary-700;
+}
+
+/* ============================================ */
+/* UTILITÁRIOS */
+/* ============================================ */
+
+/* Texto com gradiente */
+.text-gradient {
+  @apply bg-gradient-to-r from-primary-600 to-rose-500;
+  @apply bg-clip-text text-transparent;
+}
+
+/* Gradient primário */
+.gradient-primary {
+  @apply bg-gradient-primary;
+}
+
+/* Container máximo com padding */
+.container-custom {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Grid responsivo */
+.grid-responsive {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+
+/* Flexbox centralizado */
+.flex-center {
+  @apply flex items-center justify-center;
+}
+
+/* ============================================ */
+/* ANIMAÇÕES CUSTOMIZADAS */
+/* ============================================ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ============================================ */
+/* RESPONSIVIDADE CUSTOMIZADA */
+/* ============================================ */
+
+/* Para telas muito pequenas */
+@media (max-width: 640px) {
+  h1 {
+    @apply text-3xl;
+  }
+  
+  h2 {
+    @apply text-2xl;
+  }
+  
+  p {
+    @apply text-sm;
+  }
+}
+
+/* Para telas grandes */
+@media (min-width: 1920px) {
+  .container-custom {
+    @apply max-w-[120rem];
+  }
+}
+
+/* ============================================ */
+/* ACESSIBILIDADE */
+/* ============================================ */
+
+/* Skip to main content link */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus visible para navegação por teclado */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Respeitar preferência de movimento reduzido */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================ */
+/* IMPRESSÃO */
+/* ============================================ */
+
+@media print {
+  body {
+    @apply bg-white;
+  }
+
+  button,
+  form {
+    @apply hidden;
+  }
+}
