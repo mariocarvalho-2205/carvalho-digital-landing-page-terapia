@@ -1,5 +1,5 @@
 // ============================================
-// COMPONENTE FORM DE CONTATO [CORRIGIDO]
+// COMPONENTE FORM DE CONTATO [CORRIGIDO] funcionando
 // Arquivo: src/components/FormContact.jsx
 // ============================================
 
